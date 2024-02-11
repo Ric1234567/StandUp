@@ -5,13 +5,19 @@ try {
 const { app, BrowserWindow, ipcMain } = require('electron/main')
 const path = require('node:path')
 const TrayWindow = require('electron-tray-window')
-const { Tray } = require('electron')
+const { Tray, nativeImage } = require('electron')
 
 const SitManager = require('./sitManager.js')
 const Reminder = require('./reminder.js')
 const { clearInterval } = require('node:timers')
 
 let win
+
+const sittingIconPath = './images/sitting.png'
+const sittingImage = nativeImage.createFromPath(sittingIconPath)
+const standingIconPath = './images/standing.png'
+const standingImage = nativeImage.createFromPath(standingIconPath) 
+let tray
 
 let sitManager = new SitManager()
 let standUpReminder
@@ -48,9 +54,10 @@ function createWindow() {
         console.log('Window is now visible');
         // startUpdateFrontendInterval()
     });
-
+    
+    tray = new Tray(sittingImage)
     TrayWindow.setOptions({
-        trayIconPath: "images/sitting.png",
+        tray: tray,
         // windowUrl: `file://${__dirname}/index.html`
         window: win
     });
@@ -69,7 +76,7 @@ app.whenReady().then(() => {
         }
     })
 }).then(() => {
-    const iconPath = './images/standing.png'
+    const iconPath = standingIconPath
     standUpReminder = new Reminder(iconPath, 60000, 'StandUp Reminder', 'It is time to stand up!')
     standUpReminder.start()
 })
@@ -86,6 +93,12 @@ function handleButtonClick(event) {
 }
 
 ipcMain.on('toggleSitAndStand', (event) => {
+    if(sitManager.isSitting){
+        tray.setImage(standingImage)
+    }
+    else {
+        tray.setImage(sittingImage)
+    }
     sitManager.toggle()
 
     win.webContents.send('updateToggleButton', sitManager.isSitting)
