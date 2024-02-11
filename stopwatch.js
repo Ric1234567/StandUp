@@ -2,32 +2,37 @@ class Stopwatch {
   constructor() {
     this.startTime = 0;
     this.running = false;
+    this.stopTime = 0;
+    this.elapsed = 0;
   }
 
   start() {
     if (!this.running) {
       this.startTime = Date.now();
+      this.stopTime = 0;
       this.running = true;
     }
   }
 
   stop() {
     if (this.running) {
+      this.stopTime = Date.now();
+      this.elapsed += this.stopTime - this.startTime;
       this.running = false;
-      this.startTime = 0;
     }
   }
 
   reset() {
     this.startTime = 0;
+    this.stopTime = 0;
     this.running = false;
   }
 
   getTime() {
     if (this.running) {
-      return Date.now() - this.startTime;
+      return this.elapsed + Date.now() - this.startTime;
     } else {
-      return 0;
+      return this.elapsed;
     }
   }
 

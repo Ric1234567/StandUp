@@ -7,9 +7,11 @@ const path = require('node:path')
 const TrayWindow = require('electron-tray-window')
 // const { Tray } = require('electron')
 const Stopwatch = require('./stopwatch.js')
+const SitManager = require('./sitManager.js')
 
-let stopwatch
 let win
+
+let sitManager = new SitManager()
 
 function createWindow() {
     win = new BrowserWindow({
@@ -35,11 +37,7 @@ function createWindow() {
         window: win
     });
 
-    stopwatch = new Stopwatch()
-    stopwatch.start()
-
     win.webContents.openDevTools()
-    console.log("Stopwatch: " + stopwatch.getTime())
 }
 
 app.whenReady().then(() => {
@@ -63,11 +61,20 @@ function handleButtonClick(event) {
     console.log("button clicked in main.js/backend")
 }
 
+ipcMain.on('toggleSitAndStand', (event)=>{
+    sitManager.toggle()
+
+    win.webContents.send('updateToggleButton', sitManager.isSitting)
+})
+
 function sendUpdateToFrontend() {
-    let data = stopwatch.getTimeFormated();
+    let data = {
+        sitTimer: sitManager.sitTimer.getTimeFormated(),
+        standTimer: sitManager.standTimer.getTimeFormated()
+    }
     win.webContents.send('updateClock', data)
 }
 
 var interval = setInterval(() => {
     sendUpdateToFrontend();
-}, 500);
+}, 1000);
