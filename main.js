@@ -5,7 +5,7 @@ try {
 const { app, BrowserWindow, ipcMain } = require('electron/main')
 const path = require('node:path')
 const TrayWindow = require('electron-tray-window')
-const { Tray, nativeImage } = require('electron')
+const { Tray, nativeImage, Menu } = require('electron')
 
 const SitManager = require('./sitManager.js')
 const Reminder = require('./reminder.js')
@@ -16,12 +16,13 @@ let win
 const sittingIconPath = './images/sitting.png'
 const sittingImage = nativeImage.createFromPath(sittingIconPath)
 const standingIconPath = './images/standing.png'
-const standingImage = nativeImage.createFromPath(standingIconPath) 
+const standingImage = nativeImage.createFromPath(standingIconPath)
 let tray
 
 let sitManager = new SitManager()
 let standUpReminder
 let frontendUpdateInterval
+let contextMenu
 
 function createWindow() {
     win = new BrowserWindow({
@@ -54,8 +55,8 @@ function createWindow() {
         console.log('Window is now visible');
         // startUpdateFrontendInterval()
     });
-    
-    tray = new Tray(sittingImage)
+
+    createTrayIcon()
     TrayWindow.setOptions({
         tray: tray,
         // windowUrl: `file://${__dirname}/index.html`
@@ -63,6 +64,22 @@ function createWindow() {
     });
 
     win.webContents.openDevTools()
+}
+
+function createTrayIcon() {
+    tray = new Tray(sittingImage)
+    contextMenu = buildTrayMenu('Stand Up')
+        tray.on('right-click', () => {
+            tray.popUpContextMenu(contextMenu);
+        });
+}
+
+function buildTrayMenu(toggleName) {
+    return Menu.buildFromTemplate([
+        { id: 'toggle', label: toggleName, type: 'normal', click: toggleSitAndStand },
+        { type: 'separator' },
+        { label: 'Quit', role: 'quit' }
+    ]);
 }
 
 app.whenReady().then(() => {
@@ -92,22 +109,25 @@ function handleButtonClick(event) {
     console.log("button clicked in main.js/backend")
 }
 
-ipcMain.on('toggleSitAndStand', (event) => {
-    if(sitManager.isSitting){
+ipcMain.on('toggleSitAndStand', (event) => toggleSitAndStand)
+function toggleSitAndStand() {
+    if (sitManager.isSitting) {
         tray.setImage(standingImage)
+        tray.setContextMenu(contextMenu = buildTrayMenu('Sit down'))
     }
     else {
         tray.setImage(sittingImage)
+        tray.setContextMenu(contextMenu = buildTrayMenu('Stand up'))
     }
     sitManager.toggle()
 
     win.webContents.send('updateToggleButton', sitManager.isSitting)
-})
+}
 
 function startUpdateFrontendInterval() {
     frontendUpdateInterval = setInterval(() => {
         sendUpdateToFrontend();
-    }, 1000);
+    }, 100);
 }
 
 function sendUpdateToFrontend() {
