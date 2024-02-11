@@ -5,13 +5,17 @@ try {
 const { app, BrowserWindow, ipcMain } = require('electron/main')
 const path = require('node:path')
 const TrayWindow = require('electron-tray-window')
-// const { Tray } = require('electron')
-const Stopwatch = require('./stopwatch.js')
+const { Tray } = require('electron')
+
 const SitManager = require('./sitManager.js')
+const Reminder = require('./reminder.js')
+const { clearInterval } = require('node:timers')
 
 let win
 
 let sitManager = new SitManager()
+let standUpReminder
+let frontendUpdateInterval
 
 function createWindow() {
     win = new BrowserWindow({
@@ -31,6 +35,20 @@ function createWindow() {
     win.loadFile('index.html')
     win.setBackgroundColor('#e0e0e0')
 
+    win.on('closed', () => {
+        //console.log('win.closed')
+    })
+
+    win.on('hide', () => {
+        console.log('Window is now hidden');
+        // clearInterval(frontendUpdateInterval) // todo interval logic
+    });
+
+    win.on('show', () => {
+        console.log('Window is now visible');
+        // startUpdateFrontendInterval()
+    });
+
     TrayWindow.setOptions({
         trayIconPath: "images/sitting.png",
         // windowUrl: `file://${__dirname}/index.html`
@@ -41,6 +59,8 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+    startUpdateFrontendInterval()
+
     createWindow()
     app.on('activate', () => {
         console.log("activate");
@@ -48,6 +68,10 @@ app.whenReady().then(() => {
             createWindow()
         }
     })
+}).then(() => {
+    const iconPath = './images/standing.png'
+    standUpReminder = new Reminder(iconPath, 60000, 'StandUp Reminder', 'It is time to stand up!')
+    standUpReminder.start()
 })
 
 app.on('window-all-closed', () => {
@@ -61,11 +85,17 @@ function handleButtonClick(event) {
     console.log("button clicked in main.js/backend")
 }
 
-ipcMain.on('toggleSitAndStand', (event)=>{
+ipcMain.on('toggleSitAndStand', (event) => {
     sitManager.toggle()
 
     win.webContents.send('updateToggleButton', sitManager.isSitting)
 })
+
+function startUpdateFrontendInterval() {
+    frontendUpdateInterval = setInterval(() => {
+        sendUpdateToFrontend();
+    }, 1000);
+}
 
 function sendUpdateToFrontend() {
     let data = {
@@ -75,6 +105,7 @@ function sendUpdateToFrontend() {
     win.webContents.send('updateClock', data)
 }
 
-var interval = setInterval(() => {
-    sendUpdateToFrontend();
-}, 1000);
+app.on('before-quit', () => {
+    console.log('before-quit')
+    clearInterval(frontendUpdateInterval)
+})
