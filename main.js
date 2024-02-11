@@ -9,9 +9,10 @@ const TrayWindow = require('electron-tray-window')
 const Stopwatch = require('./stopwatch.js')
 
 let stopwatch
+let win
 
 function createWindow() {
-    const win = new BrowserWindow({
+    win = new BrowserWindow({
         titleBarStyle: 'hidden',
         titleBarOverlay: {
             color: '#2f3241',
@@ -21,7 +22,8 @@ function createWindow() {
         width: 800,
         height: 600,
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js')
+            preload: path.join(__dirname, 'preload.js'),
+            nodeIntegration: true
         }
     })
     win.loadFile('index.html')
@@ -57,7 +59,17 @@ app.on('window-all-closed', () => {
     }
 })
 
-function handleButtonClick(event){
+function handleButtonClick(event) {
     console.log("button clicked")
     console.log("Stopwatch: " + stopwatch.getTime())
 }
+
+function sendUpdateToFrontend() {
+    let data = stopwatch.getTimeFormated();
+    console.log(data)
+    win.webContents.send('updateClock', data)
+}
+
+setInterval(() => {
+    sendUpdateToFrontend();
+}, 500);

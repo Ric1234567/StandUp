@@ -18,6 +18,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
 contextBridge.exposeInMainWorld(
   "api", {
-    buttonClick: (event) => ipcRenderer.send("button-clicked", event)
+    buttonClick: (event) => ipcRenderer.send("button-clicked", event),
+    receive: (channel, func) => {
+      ipcRenderer.on(channel, (event, ...args) => func(...args))
+    }
   }
 )
