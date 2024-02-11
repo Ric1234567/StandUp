@@ -1,11 +1,9 @@
-// const { ipcRenderer } = require('electron');
-
 const setButton = document.getElementById('button1')
 const time = document.getElementById('time')
 
 setButton.addEventListener('click', () => {
-  console.log("test.js")
-  window.api.buttonClick()
+  console.log("button clicked in frontend")
+  window.api.send("button-clicked")
 })
 
 function updateClock(data){
@@ -13,6 +11,6 @@ function updateClock(data){
 }
 
 window.api.receive('updateClock', (data) => {
-  console.log('updateClock: ' + data)
+  //console.log('updateClock: ' + data)
   updateClock(data)
 })

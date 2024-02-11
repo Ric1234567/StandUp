@@ -43,7 +43,6 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
-    ipcMain.on("button-clicked", handleButtonClick)
     createWindow()
     app.on('activate', () => {
         console.log("activate");
@@ -59,17 +58,16 @@ app.on('window-all-closed', () => {
     }
 })
 
+ipcMain.on("button-clicked", handleButtonClick)
 function handleButtonClick(event) {
-    console.log("button clicked")
-    console.log("Stopwatch: " + stopwatch.getTime())
+    console.log("button clicked in main.js/backend")
 }
 
 function sendUpdateToFrontend() {
     let data = stopwatch.getTimeFormated();
-    console.log(data)
     win.webContents.send('updateClock', data)
 }
 
-setInterval(() => {
+var interval = setInterval(() => {
     sendUpdateToFrontend();
 }, 500);
