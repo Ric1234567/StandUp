@@ -35,7 +35,7 @@ function createWindow() {
             symbolColor: '#74b1be',
             // height: 60
         },
-        width: 800,
+        width: 600,
         height: 600,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),

@@ -50,19 +50,11 @@ toggleSitAndStandButton.addEventListener('click', () => {
 })
 
 function drawChart() {
-  // Set Data
-  const data = google.visualization.arrayToDataTable([
-    ['Contry', 'Mhl'],
-    ['Italy', 54.8],
-    ['France', 48.6],
-    ['Spain', 44.4],
-    ['USA', 23.9],
-    ['Argentina', 14.5]
-  ]);
 
   // Set Options
   const options = {
-    title: 'Sit / Stand Time'
+    title: 'Sit / Stand Time',
+    backgroundColor: 'lightgray'//'none'
   };
 
   // Draw
