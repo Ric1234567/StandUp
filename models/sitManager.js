@@ -35,6 +35,22 @@ class SitManager {
             this.standTimer.start()
         }
     }
+
+    getSitPercent() {
+        let sitTime = this.sitTimer.getTime()
+        let standTime = this.standTimer.getTime()
+
+        const total = sitTime + standTime
+        return sitTime / total;
+    }
+
+    getStandPercent() {
+        let sitTime = this.sitTimer.getTime()
+        let standTime = this.standTimer.getTime()
+
+        const total = sitTime + standTime
+        return standTime / total;
+    }
 }
 
 module.exports = SitManager;

@@ -7,8 +7,8 @@ const path = require('node:path')
 const TrayWindow = require('electron-tray-window')
 const { Tray, nativeImage, Menu } = require('electron')
 
-const SitManager = require('./sitManager.js')
-const Reminder = require('./reminder.js')
+const SitManager = require('./models/sitManager.js')
+const Reminder = require('./models/reminder.js')
 const { clearInterval } = require('node:timers')
 
 let win
@@ -27,8 +27,6 @@ let contextMenu
 function createWindow() {
     console.log('createWindow')
 
-    startUpdateFrontendInterval()
-
     win = new BrowserWindow({
         titleBarStyle: 'hidden',
         title: 'StandUp!',
@@ -44,7 +42,7 @@ function createWindow() {
             nodeIntegration: true
         }
     })
-    win.loadFile('index.html')
+    win.loadFile('index/index.html')
     win.setBackgroundColor('#e0e0e0')
 
     win.on('closed', () => {
@@ -53,12 +51,14 @@ function createWindow() {
 
     win.on('hide', () => {
         //console.log('Window is now hidden');
-        // clearInterval(frontendUpdateInterval) // todo interval logic
+        stopUpdateFrontendInterval()
     });
 
     win.on('show', () => {
-        //console.log('Window is now visible');
-        // startUpdateFrontendInterval()
+        console.log('Window is now visible');
+        startUpdateFrontendInterval()
+
+        singleUpdateFrontend()
     });
 
     createTrayIcon()
@@ -81,7 +81,7 @@ function createTrayIcon() {
     tray.on('click', (event) => {
         // console.log(event);
         console.log("Tray icon clicked");
-        
+
     })
 }
 
@@ -103,7 +103,7 @@ app.whenReady().then(() => {
     })
 }).then(() => {
     const iconPath = standingIconPath
-    standUpReminder = new Reminder(iconPath, 60000*60, 'StandUp Reminder', 'It is time to stand up!')
+    standUpReminder = new Reminder(iconPath, 60000 * 60, 'StandUp Reminder', 'It is time to stand up!')
     standUpReminder.start()
 })
 
@@ -146,19 +146,34 @@ function startTracking() {
 }
 
 function startUpdateFrontendInterval() {
-    if(frontendUpdateInterval === undefined){
+    if (frontendUpdateInterval === undefined) {
         frontendUpdateInterval = setInterval(() => {
-            sendUpdateToFrontend();
+            intervalUpdateFrontend();
         }, 100);
     }
 }
 
-function sendUpdateToFrontend() {
+function stopUpdateFrontendInterval() {
+    if (frontendUpdateInterval !== undefined) {
+        clearInterval(frontendUpdateInterval)
+        frontendUpdateInterval = undefined
+    }
+}
+
+function intervalUpdateFrontend() {
     let data = {
         sitTimer: sitManager.sitTimer.getTimeFormated(),
         standTimer: sitManager.standTimer.getTimeFormated()
     }
     win.webContents.send('updateClock', data)
+}
+
+function singleUpdateFrontend() {
+    win.webContents.send('updateChart', [
+        ['Type', '%'],
+        ['Sit Time', sitManager.getSitPercent()],
+        ['Stand Time', sitManager.getStandPercent()]
+    ])
 }
 
 app.on('before-quit', () => {
