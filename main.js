@@ -25,8 +25,13 @@ let frontendUpdateInterval
 let contextMenu
 
 function createWindow() {
+    console.log('createWindow')
+
+    startUpdateFrontendInterval()
+
     win = new BrowserWindow({
         titleBarStyle: 'hidden',
+        title: 'StandUp!',
         titleBarOverlay: {
             color: '#2f3241',
             symbolColor: '#74b1be',
@@ -68,10 +73,15 @@ function createWindow() {
 
 function createTrayIcon() {
     tray = new Tray(sittingImage)
+    tray.setToolTip("Click to toggle sit/stand.\nRight click for more options.")
     contextMenu = buildTrayMenu('Stand Up')
-        tray.on('right-click', () => {
-            tray.popUpContextMenu(contextMenu);
-        });
+    tray.on('right-click', () => {
+        tray.popUpContextMenu(contextMenu);
+    });
+    tray.on('click', (event) => {
+        // console.log(event);
+        console.log("Tray icon clicked");
+    })
 }
 
 function buildTrayMenu(toggleName) {
@@ -83,8 +93,6 @@ function buildTrayMenu(toggleName) {
 }
 
 app.whenReady().then(() => {
-    startUpdateFrontendInterval()
-
     createWindow()
     app.on('activate', () => {
         console.log("activate");
@@ -94,7 +102,7 @@ app.whenReady().then(() => {
     })
 }).then(() => {
     const iconPath = standingIconPath
-    standUpReminder = new Reminder(iconPath, 60000, 'StandUp Reminder', 'It is time to stand up!')
+    standUpReminder = new Reminder(iconPath, 60000*60, 'StandUp Reminder', 'It is time to stand up!')
     standUpReminder.start()
 })
 
@@ -109,8 +117,9 @@ function handleButtonClick(event) {
     console.log("button clicked in main.js/backend")
 }
 
-ipcMain.on('toggleSitAndStand', (event) => toggleSitAndStand)
+ipcMain.on('toggleSitAndStand', (event) => toggleSitAndStand())
 function toggleSitAndStand() {
+    //console.log("toggleSitAndStand main.js")
     if (sitManager.isSitting) {
         tray.setImage(standingImage)
         tray.setContextMenu(contextMenu = buildTrayMenu('Sit down'))
@@ -121,13 +130,26 @@ function toggleSitAndStand() {
     }
     sitManager.toggle()
 
-    win.webContents.send('updateToggleButton', sitManager.isSitting)
+    win.webContents.send('updateToggleButton', sitManager)
+}
+
+ipcMain.on('stopTracking-clicked', (event) => stopTracking())
+function stopTracking() {
+    console.log('stopTracking');
+    sitManager.stop()
+}
+
+ipcMain.on('startTracking-clicked', (event) => startTracking())
+function startTracking() {
+    sitManager.start()
 }
 
 function startUpdateFrontendInterval() {
-    frontendUpdateInterval = setInterval(() => {
-        sendUpdateToFrontend();
-    }, 100);
+    if(frontendUpdateInterval === undefined){
+        frontendUpdateInterval = setInterval(() => {
+            sendUpdateToFrontend();
+        }, 100);
+    }
 }
 
 function sendUpdateToFrontend() {
@@ -142,3 +164,6 @@ app.on('before-quit', () => {
     console.log('before-quit')
     clearInterval(frontendUpdateInterval)
 })
+
+// todo google chart sit/stand
+// https://www.w3schools.com/js/js_graphics_google_chart.asp

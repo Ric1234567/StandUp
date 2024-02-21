@@ -1,12 +1,22 @@
 const setButton = document.getElementById('button1')
 const time = document.getElementById('time')
 const toggleSitAndStandButton = document.getElementById('toggleSitAndStand')
-const sitTimer =document.getElementById('sitTimer')
-const standTimer =document.getElementById('standTimer')
+const stopTrackingButton = document.getElementById('stopTracking')
+const startTrackingButton = document.getElementById('startTracking')
+const sitTimer = document.getElementById('sitTimer')
+const standTimer = document.getElementById('standTimer')
 
 setButton.addEventListener('click', () => {
   console.log("button clicked in frontend")
   window.api.send("button-clicked")
+})
+
+stopTrackingButton.addEventListener('click', () => {
+  window.api.send("stopTracking-clicked")
+})
+
+startTrackingButton.addEventListener('click', () => {
+  window.api.send("startTracking-clicked")
 })
 
 window.api.receive('updateClock', (data) => {
@@ -16,8 +26,10 @@ window.api.receive('updateClock', (data) => {
   standTimer.innerHTML = data.standTimer
 })
 
-window.api.receive('updateToggleButton', (data) => {
-  if(data){
+window.api.receive('updateToggleButton', (sitManager) => {
+  //console.log(sitManager);
+
+  if (sitManager.isSitting) {
     toggleSitAndStandButton.innerHTML = "Stand Up"
   }
   else {
@@ -26,6 +38,6 @@ window.api.receive('updateToggleButton', (data) => {
 })
 
 toggleSitAndStandButton.addEventListener('click', () => {
-  // console.log('toggleSitAndStand')
+  //console.log('toggleSitAndStand')
   window.api.send('toggleSitAndStand')
 })

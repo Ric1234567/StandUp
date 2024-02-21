@@ -10,16 +10,30 @@ class SitManager {
     }
 
     toggle() {
-        if(this.isSitting){
+        if (this.isSitting) {
             this.standTimer.start()
             this.sitTimer.stop()
-        } 
+        }
         else {
             this.sitTimer.start()
             this.standTimer.stop()
         }
 
         this.isSitting = !this.isSitting
+    }
+
+    stop() {
+        this.standTimer.stop()
+        this.sitTimer.stop()
+    }
+
+    start() {
+        if (this.isSitting) {
+            this.sitTimer.start()
+        }
+        else {
+            this.standTimer.start()
+        }
     }
 }
 
