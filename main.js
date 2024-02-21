@@ -52,12 +52,12 @@ function createWindow() {
     })
 
     win.on('hide', () => {
-        console.log('Window is now hidden');
+        //console.log('Window is now hidden');
         // clearInterval(frontendUpdateInterval) // todo interval logic
     });
 
     win.on('show', () => {
-        console.log('Window is now visible');
+        //console.log('Window is now visible');
         // startUpdateFrontendInterval()
     });
 
@@ -81,6 +81,7 @@ function createTrayIcon() {
     tray.on('click', (event) => {
         // console.log(event);
         console.log("Tray icon clicked");
+        
     })
 }
 

@@ -1,15 +1,9 @@
-const setButton = document.getElementById('button1')
 const time = document.getElementById('time')
 const toggleSitAndStandButton = document.getElementById('toggleSitAndStand')
 const stopTrackingButton = document.getElementById('stopTracking')
 const startTrackingButton = document.getElementById('startTracking')
 const sitTimer = document.getElementById('sitTimer')
 const standTimer = document.getElementById('standTimer')
-
-setButton.addEventListener('click', () => {
-  console.log("button clicked in frontend")
-  window.api.send("button-clicked")
-})
 
 stopTrackingButton.addEventListener('click', () => {
   window.api.send("stopTracking-clicked")
