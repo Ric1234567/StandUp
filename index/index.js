@@ -34,8 +34,6 @@ window.api.receive('updateChart', (data) => {
 })
 
 window.api.receive('updateToggleButton', (sitManager) => {
-  //console.log(sitManager);
-
   if (sitManager.isSitting) {
     toggleSitAndStandButton.innerHTML = "Stand Up"
   }

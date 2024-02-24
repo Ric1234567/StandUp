@@ -8,6 +8,7 @@ const TrayWindow = require('electron-tray-window')
 const { Tray, nativeImage, Menu } = require('electron')
 
 const SitManager = require('./models/sitManager.js')
+const HistoryTracker = require('./models/historyTracker.js')
 const Reminder = require('./models/reminder.js')
 const { clearInterval } = require('node:timers')
 
@@ -20,9 +21,27 @@ const standingImage = nativeImage.createFromPath(standingIconPath)
 let tray
 
 let sitManager = new SitManager()
+let historyTracker = new HistoryTracker(3000, sitManager);// todo to 1 min
 let standUpReminder
 let frontendUpdateInterval
 let contextMenu
+
+
+app.whenReady().then(() => {
+    historyTracker.init();
+
+    createWindow();
+    app.on('activate', () => {
+        console.log("activate");
+        if (BrowserWindow.getAllWindows().length === 0) {
+            createWindow()
+        }
+    })
+}).then(() => {
+    const iconPath = standingIconPath
+    standUpReminder = new Reminder(iconPath, 60000 * 60, 'StandUp Reminder', 'It is time to stand up!')
+    standUpReminder.start()
+})
 
 function createWindow() {
     console.log('createWindow')
@@ -92,20 +111,6 @@ function buildTrayMenu(toggleName) {
         { label: 'Quit', role: 'quit' }
     ]);
 }
-
-app.whenReady().then(() => {
-    createWindow()
-    app.on('activate', () => {
-        console.log("activate");
-        if (BrowserWindow.getAllWindows().length === 0) {
-            createWindow()
-        }
-    })
-}).then(() => {
-    const iconPath = standingIconPath
-    standUpReminder = new Reminder(iconPath, 60000 * 60, 'StandUp Reminder', 'It is time to stand up!')
-    standUpReminder.start()
-})
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
