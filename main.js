@@ -35,8 +35,8 @@ function createWindow() {
             symbolColor: '#74b1be',
             // height: 60
         },
-        width: 600,
-        height: 600,
+        width: 500,
+        height: 500,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: true
@@ -171,8 +171,8 @@ function intervalUpdateFrontend() {
 function singleUpdateFrontend() {
     win.webContents.send('updateChart', [
         ['Type', '%'],
-        ['Sit Time', sitManager.getSitPercent()],
-        ['Stand Time', sitManager.getStandPercent()]
+        ['Sitting Time', sitManager.getSitPercent()],
+        ['Standing Time', sitManager.getStandPercent()]
     ])
 }
 

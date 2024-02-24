@@ -11,21 +11,30 @@
 </head>
 
 <body>
-    <div class="container">
+    <div class="container center">
 
-        <p>Sit Timer:</p>
-        <p id="sitTimer">00:00</p>
+        <div class="hlayout timerContainer">
+            <div class="timer">
+                <img src="../images/sitting.png" class="centerImg" width="32px"/>
+                <p class="time" id="sitTimer">00:00</p>
+            </div>
 
-        <p>Stand Timer:</p>
-        <p id="standTimer">00:00</p>
+            <div class="timer">
+                <img src="../images/standing.png" class="centerImg" width="32px"/>
+                <p class="time" id="standTimer">00:00</p>
+            </div>
+        </div>
 
-        <button id="toggleSitAndStand">Stand Up</button>
+        <div class="hlayout">
+            <button id="toggleSitAndStand">Stand Up</button>
+            <button id="stopTracking">Stop</button>
+            <button id="startTracking">Start</button>
+        </div>
 
-        <button id="stopTracking">Stop</button>
-        <button id="startTracking">Start</button>
-
-        <!-- chart -->
-        <div id="chart" class="pieChart">
+        <div class="hlayout">
+            <!-- chart -->
+            <div id="chart" class="pieChart">
+        </div>
         </div>
     </div>
 

@@ -53,7 +53,7 @@ function drawChart() {
 
   // Set Options
   const options = {
-    title: 'Sit / Stand Time',
+    title: 'Sitting / Standind Time',
     backgroundColor: 'lightgray'//'none'
   };
 
