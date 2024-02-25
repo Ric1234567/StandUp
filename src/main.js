@@ -126,28 +126,39 @@ function handleButtonClick(event) {
 ipcMain.on('toggleSitAndStand', (event) => toggleSitAndStand())
 function toggleSitAndStand() {
     //console.log("toggleSitAndStand main.js")
-    if (sitManager.isSitting) {
+    if (sitManager.isSitting === 'sitting') {
         tray.setImage(standingImage)
         tray.setContextMenu(contextMenu = buildTrayMenu('Sit down'))
+        sitManager.toggle()
+    
+        win.webContents.send('updateToggleButton', sitManager)
     }
-    else {
+    else if (sitManager.isSitting === 'standing' || sitManager.isSitting === 'none') {
         tray.setImage(sittingImage)
         tray.setContextMenu(contextMenu = buildTrayMenu('Stand up'))
+        sitManager.toggle()
+    
+        win.webContents.send('updateToggleButton', sitManager)
     }
-    sitManager.toggle()
-
-    win.webContents.send('updateToggleButton', sitManager)
 }
 
 ipcMain.on('stopTracking-clicked', (event) => stopTracking())
 function stopTracking() {
     console.log('stopTracking');
     sitManager.stop()
+    win.webContents.send('updateToggleButton', sitManager)
 }
 
 ipcMain.on('startTracking-clicked', (event) => startTracking())
 function startTracking() {
+    if (sitManager.isSitting === 'none') {
+        console.log('here')
+        tray.setImage(sittingImage)
+        tray.setContextMenu(contextMenu = buildTrayMenu('Stand up'))
+    }
     sitManager.start()
+
+    win.webContents.send('updateToggleButton', sitManager)
 }
 
 function startUpdateFrontendInterval() {

@@ -21,13 +21,7 @@ class HistoryTracker {
 
     track() {
         console.log('track')
-        let type = "None"//todo error
-        if (this.sitManger.isSitting) {
-            type = "Sitting";
-        }
-        else {
-            type = "Standing";
-        }
+        let type = this.sitManger.isSitting
 
         let historyObject = new HistoryObject(Date.now(), this.interval, type);
         this.history.push(historyObject);

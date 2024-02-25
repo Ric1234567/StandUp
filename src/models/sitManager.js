@@ -6,33 +6,40 @@ class SitManager {
         this.sitTimer.start()
 
         this.standTimer = new Stopwatch()
-        this.isSitting = true;
+        this.isSitting = 'sitting';
     }
 
     toggle() {
-        if (this.isSitting) {
+        if (this.isSitting === 'sitting') {
             this.standTimer.start()
             this.sitTimer.stop()
+            this.isSitting = 'standing'
         }
-        else {
+        else if(this.isSitting === 'standing') {
             this.sitTimer.start()
             this.standTimer.stop()
+            this.isSitting = 'sitting'
         }
-
-        this.isSitting = !this.isSitting
     }
 
     stop() {
         this.standTimer.stop()
         this.sitTimer.stop()
+        this.isSitting = 'none'
     }
 
     start() {
-        if (this.isSitting) {
+        if (this.isSitting === 'sitting') {
             this.sitTimer.start()
+            this.isSitting = 'sitting'
         }
-        else {
+        else if (this.isSitting === 'standing') {
             this.standTimer.start()
+            this.isSitting = 'standing'
+        }
+        else { // status none default
+            this.sitTimer.start()
+            this.isSitting = 'sitting'
         }
     }
 

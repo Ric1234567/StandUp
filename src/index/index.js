@@ -34,11 +34,23 @@ window.api.receive('updateChart', (data) => {
 })
 
 window.api.receive('updateToggleButton', (sitManager) => {
-  if (sitManager.isSitting) {
+  if (sitManager.isSitting === 'sitting') {
     toggleSitAndStandButton.innerHTML = "Stand Up"
+    toggleSitAndStandButton.disabled = false;
+    stopTrackingButton.disabled = false;
+    startTrackingButton.disabled = true;
+  }
+  else if (sitManager.isSitting === 'standing') {
+    toggleSitAndStandButton.innerHTML = "Sit Down"
+    toggleSitAndStandButton.disabled = false;
+    stopTrackingButton.disabled = false;
+    startTrackingButton.disabled = true;
   }
   else {
-    toggleSitAndStandButton.innerHTML = "Sit Down"
+    toggleSitAndStandButton.innerHTML = "None"
+    toggleSitAndStandButton.disabled = true;
+    stopTrackingButton.disabled = true;
+    startTrackingButton.disabled = false;
   }
 })
 
@@ -48,7 +60,6 @@ toggleSitAndStandButton.addEventListener('click', () => {
 })
 
 function drawChart() {
-
   // Set Options
   const options = {
     title: 'Sitting / Standind Time',
