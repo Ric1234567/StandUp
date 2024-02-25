@@ -6,7 +6,7 @@ class HistoryTracker {
         this.sitManger = sitManager;
         this.interval = interval;
         this.history = [];
-        this.historyWriter = new HistoryWriter("history.xml");
+        this.historyWriter = new HistoryWriter("../history.xml");
     }
 
     init() {
@@ -20,7 +20,8 @@ class HistoryTracker {
     }
 
     track() {
-        let type = "None"
+        console.log('track')
+        let type = "None"//todo error
         if (this.sitManger.isSitting) {
             type = "Sitting";
         }

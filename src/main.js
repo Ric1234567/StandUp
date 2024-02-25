@@ -14,9 +14,9 @@ const { clearInterval } = require('node:timers')
 
 let win
 
-const sittingIconPath = './images/sitting.png'
+const sittingIconPath = './src/images/sitting.png'
 const sittingImage = nativeImage.createFromPath(sittingIconPath)
-const standingIconPath = './images/standing.png'
+const standingIconPath = './src/images/standing.png'
 const standingImage = nativeImage.createFromPath(standingIconPath)
 let tray
 
@@ -61,7 +61,7 @@ function createWindow() {
             nodeIntegration: true
         }
     })
-    win.loadFile('index/index.html')
+    win.loadFile('src/index/index.html')
     win.setBackgroundColor('#e0e0e0')
 
     win.on('closed', () => {
@@ -185,6 +185,3 @@ app.on('before-quit', () => {
     console.log('before-quit')
     clearInterval(frontendUpdateInterval)
 })
-
-// todo google chart sit/stand
-// https://www.w3schools.com/js/js_graphics_google_chart.asp
