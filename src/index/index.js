@@ -7,6 +7,7 @@ const stopTrackingButton = document.getElementById('stopTracking')
 const startTrackingButton = document.getElementById('startTracking')
 const sitTimer = document.getElementById('sitTimer')
 const standTimer = document.getElementById('standTimer')
+const hideButton = document.getElementById('hideButton')
 
 const chartElement = document.getElementById('chart')
 
@@ -35,28 +36,31 @@ window.api.receive('updateChart', (data) => {
 
 window.api.receive('updateToggleButton', (sitManager) => {
   if (sitManager.isSitting === 'sitting') {
+    toggleSitAndStandButton.style.display = 'inline';
     toggleSitAndStandButton.innerHTML = "Stand Up"
-    toggleSitAndStandButton.disabled = false;
-    stopTrackingButton.disabled = false;
-    startTrackingButton.disabled = true;
+    stopTrackingButton.style.display = 'inline';
+    startTrackingButton.style.display = 'inline';
   }
   else if (sitManager.isSitting === 'standing') {
+    toggleSitAndStandButton.style.display = 'inline';
     toggleSitAndStandButton.innerHTML = "Sit Down"
-    toggleSitAndStandButton.disabled = false;
-    stopTrackingButton.disabled = false;
-    startTrackingButton.disabled = true;
+    stopTrackingButton.style.display = 'inline';
+    startTrackingButton.style.display = 'inline';
   }
   else {
-    toggleSitAndStandButton.innerHTML = "None"
-    toggleSitAndStandButton.disabled = true;
-    stopTrackingButton.disabled = true;
-    startTrackingButton.disabled = false;
+    toggleSitAndStandButton.style.display = 'none';
+    stopTrackingButton.style.display = 'none';
+    startTrackingButton.style.display = 'inline';
   }
 })
 
 toggleSitAndStandButton.addEventListener('click', () => {
   //console.log('toggleSitAndStand')
   window.api.send('toggleSitAndStand')
+})
+
+hideButton.addEventListener('click', () => {
+  window.api.send('hideMainWindow-clicked')
 })
 
 function drawChart() {

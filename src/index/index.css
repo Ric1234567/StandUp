@@ -12,6 +12,17 @@ button {
     margin: 5px;
 }
 
+#hideButton {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    height: 25px;
+    width: 25px;
+    overflow: hidden;
+    padding: 0px 0px;
+    font-size: 12px;
+}
+
 button:hover {
     background-color: #09693c;
     color: lightgray;

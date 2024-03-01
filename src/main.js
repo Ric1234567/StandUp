@@ -47,13 +47,10 @@ function createWindow() {
     console.log('createWindow')
 
     win = new BrowserWindow({
+        frame: false,
         titleBarStyle: 'hidden',
         title: 'StandUp!',
-        titleBarOverlay: {
-            color: '#2f3241',
-            symbolColor: '#74b1be',
-            // height: 60
-        },
+        titleBarOverlay: false,
         width: 500,
         height: 500,
         webPreferences: {
@@ -159,6 +156,12 @@ function startTracking() {
     sitManager.start()
 
     win.webContents.send('updateToggleButton', sitManager)
+}
+
+ipcMain.on('hideMainWindow-clicked', (event) => hideMainWindow())
+function hideMainWindow() {
+    console.log('hideMainWindow-clicked')
+    win.hide();
 }
 
 function startUpdateFrontendInterval() {
